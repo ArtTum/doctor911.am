@@ -1,0 +1,1 @@
+$(function(){$('#multi').MultiFile({accept:'*',max:15,STRING:{remove:'<img width="18px" src="/app/images/delete.png"> ',selected:'Выбраны: $file',denied:'Неверный тип файла: $ext!',duplicate:'Эimg файл уже выбран:\n$file!'}});});

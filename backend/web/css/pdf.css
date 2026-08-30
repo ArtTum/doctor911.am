@@ -1,0 +1,131 @@
+  
+.clear-b{
+    clear: both
+}
+.f-left{
+    float: left;
+}
+.t-a-c{
+    text-align: center;
+    width: 300px;
+}
+.w-90{
+        width: 90px;
+}
+.w-100{
+        width: 100px;
+}
+.m-b-10{
+    margin-bottom: -10px;
+}
+.w-260{
+        width: 260px;
+}
+
+.pdf-paper{
+    width: 44%;
+    border: 1px solid black;
+    max-width: 400px;
+    float: left;
+    margin-left: 15px;
+}
+.pdf-paper-second{
+    margin-left: 70px;
+}
+.reset-pm{
+    padding: 0;
+    margin: 0;
+}
+.pdf-col-1,.pdf-col-2,.pdf-col-3,.pdf-col-4,.pdf-col-5,.pdf-col-6,.pdf-col-7{
+    border-top: 1px solid black;
+    padding: 10px;
+}
+.pdf-col-2,.pdf-col-3,.pdf-col-4,.pdf-col-5,.pdf-col-6,.pdf-col-7{
+    text-align: center;
+}
+.pdf-col-1{
+    overflow: hidden;
+}
+.pdf-col-2{
+    padding-bottom: 0;
+}
+.pdf-col-3, .pdf-col-4,.pdf-col-5,.pdf-col-6,.pdf-col-7{
+    padding-top: 0;
+}
+.st-5{ 
+    margin: 0;
+    font-size: 7pt;
+    margin-top: 15px;
+    font-weight: bold;
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+}
+.pdf-qr{
+    float: left;
+    max-width: 90px
+}
+.pdf-label{
+    width: 286px;
+    text-align: center;
+    font-weight: 800;
+    float: left;
+}
+.pdf-crest{
+    float: right;
+}
+.pdf-paper-title2{
+    margin: 40px 0;
+}
+.pdf-certeficat{
+    margin: 30px 0;
+}
+.pdf-certeficat img{
+    width: 204px;
+}
+.pdf-paper-title{
+    margin-top: 40px;
+}
+.small-text{
+        font-size: 8px;
+}
+.res{
+    margin-left: 55px;
+    float: left;
+}
+.res1{
+    margin-left: 170px;
+    float: left;
+}
+.res2{
+    margin-left: 146px;
+    float: left;
+}
+.res1-1{
+    margin-right: -110px;
+}
+.res1-2{
+    margin-right: -88px;
+}
+.pdf-col-5,.pdf-col-6,.pdf-col-7{
+    margin-bottom: 12px;
+}
+
+h1{
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+    font-size: 16pt;
+}
+h2{
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+    font-size: 14pt;
+}
+h3{
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+    font-size: 10pt;
+}
+h4{
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+    font-size: 8pt;
+    font-weight: 500;
+}
+h5{
+    font-family: tahoma,tahoma_msfontservice,sans-serif;
+}

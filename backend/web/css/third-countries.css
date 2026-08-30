@@ -1,0 +1,66 @@
+.m-t_30{
+    margin-top: -30px;
+}
+.width-50{
+    width: 50%;
+}
+.width-100{
+    width: 100%;
+}
+.width-45{
+    width: 45%;
+}
+.width-40{
+    width: 40%;
+}
+.pad-l-0{
+    padding-left: 0 !important;
+}
+.pad-r-0{
+    padding-right: 0 !important;
+}
+.pad-t-0{
+    padding-top: 0 !important;
+}
+.clear-b{
+    clear: both;
+}
+.m-t-30{
+    margin-top:30px;
+}
+.dis-none{
+    display: none;
+}
+.pass-search, .pass-clrear{
+    cursor: pointer;
+}
+.view-header{
+    margin: 25px 0 15px 0;
+    font-weight: 800;
+}
+.edit-name{
+    display: block;
+}
+.edit-id{
+    display: none;
+}
+.pass-search{
+    width: 35px !important;
+}
+.input-group-addon {
+    width: 35px !important;
+}
+.pass-clrear{
+    width: 35px !important;
+}
+.modal-footer1{
+    align-items: center;
+    justify-content: flex-end;
+    padding: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.table-max-h-130{
+    height: 150px;
+    overflow: auto;
+}

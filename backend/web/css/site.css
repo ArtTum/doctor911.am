@@ -1,0 +1,40 @@
+.m-aside-menu .m-menu__nav>.m-menu__item>.m-menu__heading .m-menu__link-text, .m-aside-menu .m-menu__nav>.m-menu__item>.m-menu__link .m-menu__link-text {
+    font-weight: 400;
+    font-size: 15px;
+    text-transform: initial;
+}
+
+.m-aside-menu .m-menu__nav>.m-menu__item .m-menu__submenu .m-menu__item>.m-menu__heading .m-menu__link-text, .m-aside-menu .m-menu__nav>.m-menu__item .m-menu__submenu .m-menu__item>.m-menu__link .m-menu__link-text {
+    font-weight: 400;
+    font-size: 13px;
+    text-transform: initial;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px !important;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+}
+.form-inline {
+display: block;
+}
+
+.fileinput{
+    position: relative;
+    margin: 5px;
+}
+.remove{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.modal-content {
+    bottom: -180px;
+}
+
+#animal-modal-title{
+    margin-right: 355px;
+}
