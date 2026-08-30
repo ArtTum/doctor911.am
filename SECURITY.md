@@ -1,11 +1,11 @@
 # Security configuration
 
-Production secrets must be supplied by the process environment and must not be committed to Git.
+Production secrets may be supplied through real process environment variables or the project-root `.env` file. The process environment takes precedence. The `.env` file is loaded by `common/config/bootstrap.php`, must remain outside Git, and must be readable only by root and the PHP web-server group.
+
+Run `sudo bash scripts/configure-production.sh` after deployment to create/update `.env`, install the production Yii bootstrap files, validate configuration, and restart the detected PHP-FPM service.
 
 Required variables:
 
-- `YII_ENV=prod`
-- `YII_DEBUG=0`
 - `DB_DSN` (for example, `mysql:host=127.0.0.1;dbname=doctor911`)
 - `DB_USERNAME` (use a least-privileged application account, not `root`)
 - `DB_PASSWORD`
@@ -22,6 +22,8 @@ Optional variable:
 - `TRUSTED_PROXY_CIDRS` (comma-separated proxy CIDRs; defaults to Cloudflare's published HTTP proxy ranges, and an explicitly empty value disables proxy-header trust)
 
 The database password, cookie key, CRM credentials, legacy ARCA credentials, and SMS credentials that previously appeared in the repository must be rotated before deployment. Removing them from the latest commit does not remove them from Git history.
+
+The Nginx/Apache document root must be `frontend/web` (and `backend/web` for the admin host), never the project root. The supplied `.gitignore` excludes `.env` and deployment backups; keep the server-side `.env` at mode `0640` or stricter.
 
 The public appointment limiter uses `Request::getUserIP()`. If the site is behind a reverse proxy or CDN, configure Yii `trustedHosts` and `ipHeaders` for only the proxy ranges you control; otherwise all visitors may appear to share a proxy address.
 

@@ -31,6 +31,12 @@ phpunit.phar
 # local phpunit config
 /phpunit.xml
 
+# local secrets and deployment backups
+/.env
+/.env.*
+!/.env.example
+/.deploy-backups/
+
 # vagrant runtime
 /.vagrant
 
