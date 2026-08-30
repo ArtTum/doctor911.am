@@ -56,5 +56,16 @@ return [
     'Body' => 'Հաղորդագրություն',
 
     'Specialization' => 'Մասնագիտացում',
+    'Verification Code' => 'Ստուգման կոդ',
+    'Click the image to get a new code.' => 'Սեղմեք նկարի վրա՝ նոր կոդ ստանալու համար։',
+    'Please enter a valid first and last name.' => 'Մուտքագրեք վավեր անուն և ազգանուն։',
+    'Please enter a valid Armenian phone number.' => 'Մուտքագրեք վավեր հայկական հեռախոսահամար։',
+    'Please select only one doctor or hospital.' => 'Ընտրեք միայն մեկ բժիշկ կամ հիվանդանոց։',
+    'The appointment request could not be verified.' => 'Հերթագրման հարցումը չհաջողվեց հաստատել։',
+    'The appointment form has expired. Please reload the page.' => 'Հերթագրման ձևի ժամկետը լրացել է։ Թարմացրեք էջը։',
+    'Too many appointment attempts. Please try again later.' => 'Չափազանց շատ հերթագրման փորձեր են եղել։ Փորձեք ավելի ուշ։',
+    'Please check the appointment form and try again.' => 'Ստուգեք հերթագրման ձևը և կրկին փորձեք։',
+    'The selected doctor or hospital is unavailable.' => 'Ընտրված բժիշկը կամ հիվանդանոցը հասանելի չէ։',
+    'There was an error sending your message.' => 'Հարցումն ուղարկելիս սխալ է տեղի ունեցել։',
     'add-subscribe' => 'Շնորհակալություն Ձեր հարցումն ընդունված է: Մեր աշխատակիցը հնարավորինս շուտ կզանգահարի Ձեզ:',
 ];

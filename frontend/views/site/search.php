@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <a class="link" href="#">0 <?= Yii::t('frontend', 'reviews')?></a>
                                 </div>
                                 <div class="col-lg-12">
-                                    <button type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
+                                    <button onclick="registerHospital(<?= (int) $hospital->id ?>)" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
                                         <?= Yii::t('frontend', 'Register and get a discount')?>
                                     </button>
                                 </div>
@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <a class="link" href="#">0 <?= Yii::t('frontend', 'reviews')?></a>
                                 </div>
                                 <div class="col-lg-12">
-                                    <button type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
+                                    <button onclick="registerDoctor(<?= (int) $doctor->id ?>)" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
                                         <?= Yii::t('frontend', 'Register and get a discount')?>
                                     </button>
                                 </div>

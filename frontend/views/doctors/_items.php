@@ -78,7 +78,7 @@ use kartik\rating\StarRating;
                             <a href="<?= Helper::lang('doctor/'.$doctor->alias)?>?reviews=active" class="link"><?= Helper::ratingDoctorCount($doctor->id)?> <?= Yii::t('frontend', 'reviews')?></a>
                         </div>
                         <div class="col-lg-12">
-                            <button onclick="registerDoctor('<?= Translate::text($doctor->getLangHasDoctors(), 'full_name'); ?>')" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
+                            <button onclick="registerDoctor(<?= (int) $doctor->id ?>)" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
                                 <?= Yii::t('frontend', 'Register and get a discount')?>
                             </button>
                         </div>

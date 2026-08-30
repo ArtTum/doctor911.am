@@ -56,6 +56,17 @@ return [
     'Body' => 'Сообщение',
 
     'Specialization' => 'Специализация',
+    'Verification Code' => 'Проверочный код',
+    'Click the image to get a new code.' => 'Нажмите на изображение, чтобы получить новый код.',
+    'Please enter a valid first and last name.' => 'Введите корректные имя и фамилию.',
+    'Please enter a valid Armenian phone number.' => 'Введите корректный армянский номер телефона.',
+    'Please select only one doctor or hospital.' => 'Выберите только одного врача или одну больницу.',
+    'The appointment request could not be verified.' => 'Не удалось проверить запрос на запись.',
+    'The appointment form has expired. Please reload the page.' => 'Срок действия формы истёк. Обновите страницу.',
+    'Too many appointment attempts. Please try again later.' => 'Слишком много попыток записи. Повторите позже.',
+    'Please check the appointment form and try again.' => 'Проверьте форму записи и повторите попытку.',
+    'The selected doctor or hospital is unavailable.' => 'Выбранный врач или больница недоступны.',
+    'There was an error sending your message.' => 'При отправке запроса произошла ошибка.',
     'add-subscribe' => 'Ваш запрос принят. Наш сотрудник свяжется с вами в ближайшее время.',
 
 ];

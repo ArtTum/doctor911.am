@@ -104,6 +104,7 @@ $this->registerMetaTag(['name' => 'description', 'content' => Translate::text($h
             <p class="info"><?= Yii::t('frontend', 'Go to your doctor and get a 5-40% discount')?></p>
         </div>
         <form id="w0" class="form-search" action="<?= Helper::lang('search')?>" method="post">
+            <?= Html::hiddenInput(Yii::$app->request->csrfParam, Yii::$app->request->csrfToken) ?>
             <input class="search" name="search" type="text" placeholder="<?= Yii::t('frontend', 'Search')?>...">
             <input class="submit" type="submit" value="<?= Yii::t('frontend', 'Search')?>">
             <div class="clear"></div>

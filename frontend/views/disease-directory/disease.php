@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <div class="row">
 
                                         <div class="col-lg-12">
-                                            <button style="font-size: 10px;white-space: normal;" onclick="registerDoctor('<?= Translate::text($doctor->getLangHasDoctors(), 'full_name'); ?>')" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
+                                            <button style="font-size: 10px;white-space: normal;" onclick="registerDoctor(<?= (int) $doctor->id ?>)" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
                                                 <?= Yii::t('frontend', 'Register and get a discount')?>
                                             </button>
                                         </div>

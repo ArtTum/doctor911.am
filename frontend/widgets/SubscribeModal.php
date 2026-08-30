@@ -8,11 +8,9 @@
 namespace frontend\widgets;
 
 
-use common\components\Helper;
-use common\components\Translate;
 use common\models\Doctor;
 use common\models\Hospital;
-use common\models\Subscribe;
+use frontend\models\SubscribeForm;
 use Yii;
 use yii\base\Widget;
 
@@ -26,28 +24,29 @@ class SubscribeModal extends Widget {
      * @return string
      */
     public function run() {
-        $model = new Subscribe();
+        $model = new SubscribeForm();
+        $model->form_token = SubscribeForm::createFormToken();
         $alias = Yii::$app->request->get('alias');
 
-        $doctor = Doctor::findOne(['alias' => $alias]);
-        $hospital = Hospital::findOne(['alias' => $alias]);
+        $doctor = Doctor::findOne(['alias' => $alias, 'status' => 1]);
+        $hospital = Hospital::findOne(['alias' => $alias, 'status' => 1]);
 
         if(!empty($doctor)){
-            $doctor_name = Translate::text($doctor->getLangHasDoctors(), 'full_name');
+            $doctor_id = $doctor->id;
         }else{
-            $doctor_name = null;
+            $doctor_id = null;
         }
 
         if(!empty($hospital)){
-            $hospital_name = Translate::text($hospital->getLangHasHospitals(), 'name');
+            $hospital_id = $hospital->id;
         }else{
-            $hospital_name = null;
+            $hospital_id = null;
         }
 
         return $this->render('subscribe-modal', [
             'model' => $model,
-            'doctor_name' => $doctor_name,
-            'hospital_name' => $hospital_name,
+            'doctor_id' => $doctor_id,
+            'hospital_id' => $hospital_id,
         ]);
     }
 }

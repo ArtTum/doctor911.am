@@ -1,6 +1,7 @@
 <?php
 
-error_reporting(0);
+error_reporting(E_ALL);
+ini_set('display_errors', YII_DEBUG ? '1' : '0');
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -13,9 +14,9 @@ return [
         ],
         'db' => [
             'class' => yii\db\Connection::class,
-            'dsn' => 'mysql:host=127.0.0.1;dbname=doctor911',
-            'username' => 'root',
-            'password' => 'Arttum#999Server',
+            'dsn' => getenv('DB_DSN') ?: 'mysql:host=127.0.0.1;dbname=doctor911',
+            'username' => getenv('DB_USERNAME') ?: '',
+            'password' => getenv('DB_PASSWORD') ?: '',
             'charset' => 'utf8',
         ],
         'mailer' => [

@@ -26,10 +26,8 @@ class RecommendationsController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -46,16 +44,6 @@ class RecommendationsController extends Controller
 
 
 
-    public function beforeAction($action)
-    {
-        $this->enableCsrfValidation = false;
-        if (Yii::$app->user->isGuest) {
-             $this->redirect('/');
-        }
-
-        return parent::beforeAction($action);
-    }
-
     /**
      * Lists all Services models.
      * @return mixed
@@ -68,17 +56,31 @@ class RecommendationsController extends Controller
 
         if ($model->load($post)) {
 
+            $smsBrokerUrl = getenv('SMS_BROKER_URL') ?: '';
+            $smsBrokerLogin = getenv('SMS_BROKER_LOGIN') ?: '';
+            $smsBrokerPassword = getenv('SMS_BROKER_PASSWORD') ?: '';
+            if (strncmp($smsBrokerUrl, 'https://', 8) !== 0 || $smsBrokerLogin === '' || $smsBrokerPassword === '') {
+                Yii::error('SMS broker HTTPS credentials are not configured.', 'security.sms');
+                Yii::$app->session->setFlash('error', 'SMS service is not configured.');
+                return $this->refresh();
+            }
+
             $phone = str_replace(["-", '', '.', ',', ' '], "", $post['Services']['phone']);
             $phone_text = $post['Services']['additional_data'];
+
+            $xmlLogin = htmlspecialchars($smsBrokerLogin, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            $xmlPassword = htmlspecialchars($smsBrokerPassword, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            $xmlPhone = htmlspecialchars($phone, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+            $xmlText = htmlspecialchars($phone_text, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 
 
             $envelope= '<?xml version="1.0" encoding="UTF-8"?>
 
-            <bulk-request login="doctor911" password="doctor911" ref-id="'.date('Y-m-d H:i:s').'" delivery-notification-requested="true" version="1.0">
+            <bulk-request login="'.$xmlLogin.'" password="'.$xmlPassword.'" ref-id="'.date('Y-m-d H:i:s').'" delivery-notification-requested="true" version="1.0">
             
-              <message id="'.$model->id.'" msisdn="'.$phone.'" service-number="Doctor911am" defer-date="'.date('Y-m-d H:i:s').'" validity-period="3" priority="1">
+              <message id="'.$model->id.'" msisdn="'.$xmlPhone.'" service-number="Doctor911am" defer-date="'.date('Y-m-d H:i:s').'" validity-period="3" priority="1">
             
-               <content type="text/plain">'.$phone_text.'</content>
+               <content type="text/plain">'.$xmlText.'</content>
             
               </message>
             
@@ -90,15 +92,18 @@ class RecommendationsController extends Controller
 
             $MSAPI_Call = curl_init();
             //Change the following URL to point to production instead of integration
-            curl_setopt($MSAPI_Call, CURLOPT_URL, 'http://31.47.195.66:80/broker/');
+            curl_setopt($MSAPI_Call, CURLOPT_URL, $smsBrokerUrl);
             curl_setopt($MSAPI_Call, CURLOPT_TIMEOUT, 30);
             curl_setopt($MSAPI_Call, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($MSAPI_Call, CURLOPT_POST, true);
             curl_setopt($MSAPI_Call, CURLOPT_POSTFIELDS, $envelope);
             curl_setopt($MSAPI_Call, CURLOPT_HTTPHEADER, $header);
-            curl_setopt($MSAPI_Call, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($MSAPI_Call, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($MSAPI_Call, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($MSAPI_Call, CURLOPT_SSL_VERIFYHOST, 2);
             curl_setopt($MSAPI_Call, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+            if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+                curl_setopt($MSAPI_Call, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+            }
 
             $response = curl_exec($MSAPI_Call);
             $err = curl_error($MSAPI_Call);

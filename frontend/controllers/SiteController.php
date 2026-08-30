@@ -2,7 +2,9 @@
 namespace frontend\controllers;
 
 use common\components\Helper;
+use common\components\IpRateLimit;
 use common\components\Pagination;
+use common\components\Translate;
 use common\models\Category;
 use common\models\Doctor;
 use common\models\HelpInfo;
@@ -14,9 +16,11 @@ use Yii;
 use yii\bootstrap\Html;
 use yii\db\Expression;
 use yii\filters\VerbFilter;
+use yii\filters\RateLimiter;
 use yii\filters\AccessControl;
 use frontend\models\ContactForm;
 use yii\web\NotFoundHttpException;
+use frontend\models\SubscribeForm;
 
 /**
  * Site controller
@@ -49,20 +53,22 @@ class SiteController extends BaseController
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    'add-subscribe' => ['post'],
                 ],
             ],
+            'subscribeRateLimiter' => [
+                'class' => RateLimiter::className(),
+                'only' => ['add-subscribe'],
+                'user' => function () {
+                    return new IpRateLimit([
+                        'id' => Yii::$app->request->getUserIP(),
+                        'limit' => 10,
+                        'window' => 600,
+                    ]);
+                },
+                'errorMessage' => Yii::t('frontend', 'Too many appointment attempts. Please try again later.'),
+            ],
         ];
-    }
-
-    /**
-     * @param $action
-     * @return bool
-     * @throws \yii\web\BadRequestHttpException
-     */
-    public function beforeAction($action)
-    {
-        $this->enableCsrfValidation = false;
-        return parent::beforeAction($action);
     }
 
     /**
@@ -251,57 +257,155 @@ class SiteController extends BaseController
     /**
      * @throws NotFoundHttpException
      */
-    public function actionAddSubscribe(){
+    public function actionAddSubscribe()
+    {
+        $form = new SubscribeForm();
 
-        $post = Yii::$app->request->post();
-
-
-        if(!empty($post)){
-
-            $headers = array(
-                'Content-Type: application/json',
-            );
-
-            $fields = array(
-                'key' => '4444',
-                'format' => 'json',
-                'ip' => $_SERVER['REMOTE_ADDR'],
-                'post' => $post,
-            );
-            $url = 'https://crm.doctor911.am/site/add-subscribes?' . http_build_query($fields);
-
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POST, false);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-            $result = curl_exec($ch);
-
-            curl_close($ch);
-
-            if ($result == 'success') {
-
-                $model = new Subscribe();
-                $model->date = date('Y-m-d H:i:s');
-                $model->year = date('Y');
-                $model->month = date('m');
-
-                if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                    return $this->render('add-subscribe', []);
-                }
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
+        if (!$form->load(Yii::$app->request->post()) || !$form->validate()) {
+            Yii::warning([
+                'event' => 'appointment_rejected',
+                'client' => $this->getClientFingerprint(),
+                'invalidFields' => array_keys($form->getErrors()),
+            ], 'security.appointment');
+            Yii::$app->session->setFlash('error', Yii::t('frontend', 'Please check the appointment form and try again.'));
 
             return $this->redirect('/');
-
-        }else{
-            throw new NotFoundHttpException(Yii::t('frontend', 'The requested page does not exist.'));
         }
 
+        if (!$this->resolveSubscribeTarget($form)) {
+            Yii::$app->session->setFlash('error', Yii::t('frontend', 'The selected doctor or hospital is unavailable.'));
+            return $this->redirect('/');
+        }
 
+        $duplicateKey = [
+            'accepted-appointment',
+            hash_hmac(
+                'sha256',
+                $form->phone . '|' . (int) $form->doctor_id . '|' . (int) $form->hospital_id,
+                Yii::$app->request->cookieValidationKey
+            ),
+        ];
+
+        if (!Yii::$app->cache->add($duplicateKey, true, 900)) {
+            return $this->render('add-subscribe');
+        }
+
+        if (!$this->sendSubscribeToCrm($form)) {
+            Yii::$app->cache->delete($duplicateKey);
+            Yii::$app->session->setFlash('error', Yii::t('frontend', 'There was an error sending your message.'));
+
+            return $this->redirect('/');
+        }
+
+        $model = new Subscribe();
+        $model->full_name = $form->full_name;
+        $model->phone = $form->phone;
+        $model->description = $form->description;
+        $model->doctor = $form->doctorName;
+        $model->hospital = $form->hospitalName;
+        $model->date = date('Y-m-d H:i:s');
+        $model->year = date('Y');
+        $model->month = date('m');
+
+        if (!$model->save()) {
+            Yii::error([
+                'event' => 'appointment_local_save_failed',
+                'client' => $this->getClientFingerprint(),
+            ], 'security.appointment');
+        }
+
+        return $this->render('add-subscribe');
+    }
+
+    private function resolveSubscribeTarget(SubscribeForm $form)
+    {
+        if (!empty($form->doctor_id)) {
+            $doctor = Doctor::findOne(['id' => $form->doctor_id, 'status' => 1]);
+            if ($doctor === null) {
+                return false;
+            }
+            $form->doctorName = Translate::text($doctor->getLangHasDoctors(), 'full_name');
+        }
+
+        if (!empty($form->hospital_id)) {
+            $hospital = Hospital::findOne(['id' => $form->hospital_id, 'status' => 1]);
+            if ($hospital === null) {
+                return false;
+            }
+            $form->hospitalName = Translate::text($hospital->getLangHasHospitals(), 'name');
+        }
+
+        return true;
+    }
+
+    private function sendSubscribeToCrm(SubscribeForm $form)
+    {
+        $url = Yii::$app->params['crmSubscribeUrl'];
+        $key = Yii::$app->params['crmSubscribeKey'];
+        $token = Yii::$app->params['crmSubscribeToken'];
+
+        if (strncmp($url, 'https://', 8) !== 0 || $key === '' || $token === '') {
+            Yii::error(['event' => 'appointment_crm_not_configured'], 'security.appointment');
+            return false;
+        }
+
+        $fields = [
+            'key' => $key,
+            'format' => 'json',
+            'ip' => Yii::$app->request->getUserIP(),
+            'post' => [
+                'token' => $token,
+                'Subscribe' => [
+                    'full_name' => $form->full_name,
+                    'phone' => $form->phone,
+                    'description' => (string) $form->description,
+                    'doctor' => (string) $form->doctorName,
+                    'hospital' => (string) $form->hospitalName,
+                ],
+            ],
+        ];
+
+        $options = [
+            CURLOPT_URL => $url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($fields),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+        ];
+        if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        $result = curl_exec($ch);
+        $httpStatus = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($result === false || $httpStatus < 200 || $httpStatus >= 300 || trim($result) !== 'success') {
+            Yii::warning([
+                'event' => 'appointment_crm_rejected',
+                'httpStatus' => $httpStatus,
+                'transportError' => $curlError === '' ? null : $curlError,
+            ], 'security.appointment');
+            return false;
+        }
+
+        return true;
+    }
+
+    private function getClientFingerprint()
+    {
+        return hash_hmac(
+            'sha256',
+            (string) Yii::$app->request->getUserIP(),
+            Yii::$app->request->cookieValidationKey
+        );
     }
 }

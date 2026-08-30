@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace common\controllers;
 
@@ -8,8 +8,6 @@ use yii\filters\VerbFilter;
 use yii\web\Controller;
 
 class AuthController extends Controller{
-
-    public $enableCsrfValidation = false;
 
     public function behaviors(){
 

@@ -174,12 +174,14 @@ setInterval(function () {
     );
 }, 2000);
 
-function registerDoctor(doctor) {
-    $('#subscribe-doctor').val(doctor);
+function registerDoctor(doctorId) {
+    $('#subscribe-doctor_id').val(doctorId);
+    $('#subscribe-hospital_id').val('');
 }
 
-function registerHospital(hospital) {
-    $('#subscribe-hospital').val(hospital);
+function registerHospital(hospitalId) {
+    $('#subscribe-hospital_id').val(hospitalId);
+    $('#subscribe-doctor_id').val('');
 }
 document.querySelector('.custom-select-wrapper').addEventListener('click', function() {
     this.querySelector('.custom-select').classList.toggle('open');

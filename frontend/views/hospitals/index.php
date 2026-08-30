@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = Translate::text($types->getLangHasTypes(), 'nam
                                     <a class="link"><?= Helper::ratingHospitalCount($hospital->id)?> <?= Yii::t('frontend', 'reviews')?></a>
                                 </div>
                                 <div class="col-lg-12">
-                                    <button onclick="registerHospital('<?= Translate::text($hospital->getLangHasHospitals(), 'name'); ?>')" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
+                                    <button onclick="registerHospital(<?= (int) $hospital->id ?>)" type="button" class="btn fix-button" data-toggle="modal" data-target="#exampleModal">
                                         <?= Yii::t('frontend', 'Register and get a discount')?>
                                     </button>
                                 </div>

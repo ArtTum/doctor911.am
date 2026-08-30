@@ -5,6 +5,7 @@ $params = array_merge(
     require __DIR__ . '/params.php',
     require __DIR__ . '/params-local.php'
 );
+$trustedProxyConfig = require __DIR__ . '/../../common/config/trusted-proxies.php';
 
 return [
     'id' => 'app-frontend',
@@ -12,18 +13,33 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
-        'request' => [
+        'request' => array_merge([
             'csrfParam' => '_csrf-frontend',
-            'baseUrl' => ''
-        ],
+            'baseUrl' => '',
+            'csrfCookie' => [
+                'httpOnly' => true,
+                'secure' => YII_ENV_PROD,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
+            ],
+        ], $trustedProxyConfig),
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+            'identityCookie' => [
+                'name' => '_identity-frontend',
+                'httpOnly' => true,
+                'secure' => YII_ENV_PROD,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
+            ],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
             'name' => 'advanced-frontend',
+            'cookieParams' => [
+                'httponly' => true,
+                'secure' => YII_ENV_PROD,
+                'samesite' => \yii\web\Cookie::SAME_SITE_LAX,
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -31,6 +47,7 @@ return [
                 [
                     'class' => yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
+                    'logVars' => [],
                 ],
             ],
         ],
