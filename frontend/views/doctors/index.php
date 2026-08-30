@@ -11,6 +11,7 @@ use kartik\rating\StarRating;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$alias = isset($alias) ? (string) $alias : '';
 $page = \common\models\Page::findOne(['alias' => $alias]);
 if(!empty($page)){
     $this->title = Translate::text($page->getLangHasPages(), 'meta_title');

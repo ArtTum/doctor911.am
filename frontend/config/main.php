@@ -62,6 +62,7 @@ return [
                 '/' => 'site/index',
                 '<language:(ru|en)>' => 'site/index',
                 'add-subscribe' => 'site/add-subscribe',
+                'captcha' => 'site/captcha',
 
 
                 [

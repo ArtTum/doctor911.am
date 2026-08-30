@@ -4,6 +4,8 @@ Production secrets must be supplied by the process environment and must not be c
 
 Required variables:
 
+- `YII_ENV=prod`
+- `YII_DEBUG=0`
 - `DB_DSN` (for example, `mysql:host=127.0.0.1;dbname=doctor911`)
 - `DB_USERNAME` (use a least-privileged application account, not `root`)
 - `DB_PASSWORD`

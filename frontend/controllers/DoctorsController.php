@@ -48,12 +48,19 @@ class DoctorsController extends BaseController
             $this->layout = false;
         }
 
+        $hospital = null;
+        $category = null;
+        $professions = [];
+
         $doctors = Doctor::find()
             ->where(['status' => 1])
             ->orderBy(['doctor.alias' => SORT_ASC]);
 
-        $hospital = Hospital::findOne(['alias' => $get_hospital_alias]);
-        if ($get_hospital_alias){
+        if (!empty($get_hospital_alias)) {
+            $hospital = Hospital::findOne(['alias' => $get_hospital_alias, 'status' => 1]);
+            if ($hospital === null) {
+                throw new NotFoundHttpException(Yii::t('frontend', 'The requested page does not exist.'));
+            }
 
             $doctors = $doctors->joinWith(['hospitalHasDoctors'])
                 ->andWhere(['hospital_has_doctor.hospital_id' => $hospital->id]);
@@ -65,9 +72,13 @@ class DoctorsController extends BaseController
 
         }
 
-        if ($get_profession_alias){
+        if (!empty($get_profession_alias)) {
 
             $category = Category::findOne(['alias' => $get_profession_alias]);
+            if ($category === null) {
+                throw new NotFoundHttpException(Yii::t('frontend', 'The requested page does not exist.'));
+            }
+
             $doctors = $doctors->joinWith(['doctorHasCategories'])
                 ->andWhere(['doctor_has_category.category_id' => $category->id]);
         }
@@ -93,9 +104,9 @@ class DoctorsController extends BaseController
             'title' => Yii::t('frontend','Doctors'),
             'alias' => 'doctors',
             'hospitals' => $hospitals,
-            'professions' => $professions??[],
+            'professions' => $professions,
             'hospital_' => $hospital,
-            'category' =>  $category,
+            'category' => $category,
 
         ]);
 
@@ -162,11 +173,14 @@ class DoctorsController extends BaseController
             $this->layout = false;
         }
         $category = Category::findOne(['alias' => $alias]);
+        if ($category === null) {
+            throw new NotFoundHttpException(Yii::t('frontend', 'The requested page does not exist.'));
+        }
 
         $doctors = Doctor::find()
-            ->where(['doctor_status' => 1])
+            ->where(['doctor.status' => 1])
             ->innerJoin('doctor_has_category','doctor_has_category.doctor_id=doctor.id')
-            ->where(['doctor_has_category.category_id' => $category->id])
+            ->andWhere(['doctor_has_category.category_id' => $category->id])
             ->orderBy(['doctor.alias' => SORT_ASC])
             ->groupBy('doctor.id');
 
@@ -185,6 +199,7 @@ class DoctorsController extends BaseController
             'count' => $countQuery->count(),
             'category' => $category,
             'title' => Translate::text($category->getLangHasCategories(), 'name'),
+            'alias' => $alias,
         ]);
 
     }
