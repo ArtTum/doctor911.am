@@ -25,4 +25,34 @@ $this->title = Yii::t('admin', 'Create Hospital');
                     <li class="m-nav__separator">
                         -
                     </li>
-                    <li class="m-nav__
+                    <li class="m-nav__item">
+                        <a href="<?= Url::to(['/hospitals'])?>" class="m-nav__link">
+                            <span class="m-nav__link-text">
+                                 <?= Yii::t('admin', 'Hospitals')?>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="m-nav__separator">
+                        -
+                    </li>
+                    <li class="m-nav__item">
+                        <a href="" class="m-nav__link">
+                            <span class="m-nav__link-text">
+                                 <?= $this->title?>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <?= $this->render('_form', [
+        'model' => $model,
+        'lang'  => $lang,
+        'model_lang' => $model_lang,
+        'model_type' => $model_type,
+        'type_data' => $type_data,
+    ]) ?>
+
+</div>
