@@ -1,6 +1,6 @@
 # Security configuration
 
-Production secrets may be supplied through real process environment variables or the project-root `.env` file. The process environment takes precedence. The `.env` file is loaded by `common/config/bootstrap.php`, must remain outside Git, and must be readable only by root and the PHP web-server group.
+Production secrets may be supplied through real process environment variables or the project-root `.env` file. When `.env` exists, its values are authoritative for this project. The `.env` file is loaded by `common/config/bootstrap.php`, must remain outside Git, and must be readable only by root and the PHP web-server group.
 
 Run `sudo bash scripts/configure-production.sh` after deployment to create/update `.env`, install the production Yii bootstrap files, validate configuration, and restart the detected PHP-FPM service.
 

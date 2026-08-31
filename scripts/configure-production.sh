@@ -105,21 +105,6 @@ prompt_required() {
     write_env_value "$key" "$value"
 }
 
-prompt_optional() {
-    local key="$1" label="$2" secret="${3:-0}" value
-    if read_env_value "$key" >/dev/null; then
-        return
-    fi
-    [[ -t 0 ]] || return
-    if [[ "$secret" -eq 1 ]]; then
-        read -r -s -p "$label (leave empty to skip): " value
-        printf '\n'
-    else
-        read -r -p "$label (leave empty to skip): " value
-    fi
-    [[ -z "$value" ]] || write_env_value "$key" "$value"
-}
-
 log 'Configuring project-local environment file.'
 prompt_required DB_DSN 'Database DSN' 0 'mysql:host=127.0.0.1;dbname=doctor911'
 prompt_required DB_USERNAME 'Database username'
@@ -132,8 +117,8 @@ if ! read_env_value BACKEND_COOKIE_VALIDATION_KEY >/dev/null; then
     write_env_value BACKEND_COOKIE_VALIDATION_KEY "$($PHP_BIN -r 'echo bin2hex(random_bytes(32));')"
 fi
 
-prompt_optional CRM_SUBSCRIBE_KEY 'CRM subscribe key' 1
-prompt_optional CRM_SUBSCRIBE_TOKEN 'CRM subscribe token' 1
+prompt_required CRM_SUBSCRIBE_KEY 'CRM subscribe key' 1
+prompt_required CRM_SUBSCRIBE_TOKEN 'CRM subscribe token' 1
 
 backup_and_copy() {
     local source="$1" destination="$2" relative

@@ -4,7 +4,7 @@ $projectRoot = dirname(dirname(__DIR__));
 $envFile = $projectRoot . '/.env';
 
 // Production may keep secrets in a project-local, Git-ignored .env file.
-// Real process environment variables take precedence, and tests never load it.
+// When present it is authoritative for this project, and tests never load it.
 if ((!defined('YII_ENV_TEST') || !YII_ENV_TEST) && is_file($envFile)) {
     if (!is_readable($envFile) || filesize($envFile) > 65536) {
         throw new RuntimeException('The application environment file is not readable or is unexpectedly large.');
@@ -18,10 +18,6 @@ if ((!defined('YII_ENV_TEST') || !YII_ENV_TEST) && is_file($envFile)) {
     foreach ($variables as $name => $value) {
         if (!preg_match('/^[A-Z][A-Z0-9_]*$/', $name) || !is_string($value)) {
             throw new RuntimeException('The application environment file contains an invalid entry.');
-        }
-
-        if (getenv($name) !== false) {
-            continue;
         }
 
         putenv($name . '=' . $value);

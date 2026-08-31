@@ -65,7 +65,9 @@ use yii\helpers\Html;
                         'options' => [
                             'class' => 'form-control',
                             'autocomplete' => 'off',
-                            'maxlength' => 8,
+                            'inputmode' => 'numeric',
+                            'pattern' => '[0-9]*',
+                            'maxlength' => 4,
                         ],
                     ]) ?>
 

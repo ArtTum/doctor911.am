@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use common\components\Helper;
 use common\components\IpRateLimit;
 use common\components\Pagination;
+use common\components\SimpleNumericCaptchaAction;
 use common\components\Translate;
 use common\models\Category;
 use common\models\Doctor;
@@ -81,8 +82,14 @@ class SiteController extends BaseController
                 'class' => 'yii\web\ErrorAction',
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'class' => SimpleNumericCaptchaAction::class,
+                'fixedVerifyCode' => YII_ENV_TEST ? '1234' : null,
+                'width' => 120,
+                'height' => 48,
+                'padding' => 7,
+                'foreColor' => 0x173f20,
+                'backColor' => 0xffffff,
+                'testLimit' => 3,
             ],
         ];
     }
