@@ -42,7 +42,7 @@ class PagesController extends AuthController
         $model_lang = new LangHasPage();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['lang']['name_1'];
+        $model->name_alias = $post['lang']['name_1'] ?? null;
 
         if ($model->load($post) && $model->save()) {
 
@@ -70,7 +70,9 @@ class PagesController extends AuthController
         $model_lang = new LangHasPage();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['Page']['alias'] ? $post['Page']['alias'] : $post['lang']['name_1'];
+        $model->name_alias = !empty($post['Page']['alias'])
+            ? $post['Page']['alias']
+            : ($post['lang']['name_1'] ?? null);
 
         if ($model->load($post) && $model->save()) {
 

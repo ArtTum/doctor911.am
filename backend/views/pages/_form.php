@@ -35,13 +35,13 @@ use yii\widgets\ActiveForm;
 
                 <div class="m-portlet__body row">
                     <div class="col-12">
-                        <?if(!$model->isNewRecord):?>
+                        <?php if(!$model->isNewRecord):?>
                             <?= $form->field($model, 'alias')->textInput(['maxlength' => true]) ?>
-                        <?endif;?>
+                        <?php endif;?>
                     </div>
                     <div class="form-group m-form__group col-12">
 
-                        <?
+                        <?php
                         foreach($lang as $item){
                             $tabs['items'][] =  [
                                 'label' => $item->name,
@@ -73,7 +73,7 @@ use yii\widgets\ActiveForm;
                                 <?= Html::submitButton('Պահպանել', ['class' => 'btn btn-brand ']) ?>
                                 <?= Html::a('Չեղարկել', ['/pages'], ['class' => 'btn btn-secondary'])?>
                             </div>
-                            <?if(!$model->isNewRecord):?>
+                            <?php if(!$model->isNewRecord):?>
                                 <div class="col m--align-right">
                                     <?= Html::a(Yii::t('admin', 'Ջնջել'), ['delete', 'id' => $model->id], [
                                         'class' => 'btn btn-danger',
@@ -83,7 +83,7 @@ use yii\widgets\ActiveForm;
                                         ],
                                     ]) ?>
                                 </div>
-                            <?endif;?>
+                            <?php endif;?>
                         </div>
                     </div>
                 </div>

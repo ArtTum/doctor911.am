@@ -54,7 +54,7 @@ class HospitalsController extends AuthController
 
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['lang']['name_1'];
+        $model->name_alias = $post['lang']['name_1'] ?? null;
         $upload = UploadedFile::getInstance($model, 'image');
 
 
@@ -65,7 +65,7 @@ class HospitalsController extends AuthController
         foreach ($types as $type){
             $type_data[$type->id] = Translate::text($type->getLangHasTypes(), 'name');
         }
-        $model->image = 'name';
+        $model->image = '';
 
         if ($model->load($post) && $model->save()) {
 
@@ -75,7 +75,7 @@ class HospitalsController extends AuthController
             }
 
             $model_lang->add($post, $lang, $model->id);
-            $model_type->add($post["HospitalHasType"]['type_id'], $model->id);
+            $model_type->add($post["HospitalHasType"]['type_id'] ?? [], $model->id);
 
             return $this->redirect(['/hospitals']);
         } else {
@@ -105,7 +105,9 @@ class HospitalsController extends AuthController
 
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['Hospital']['alias'] ? $post['Hospital']['alias'] : $post['lang']['name_1'];
+        $model->name_alias = !empty($post['Hospital']['alias'])
+            ? $post['Hospital']['alias']
+            : ($post['lang']['name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
         $lastImage = $model->image;
 
@@ -134,7 +136,7 @@ class HospitalsController extends AuthController
             $model_lang->add($post, $lang, $model->id);
 
             $model_type->remove($model->id);
-            $model_type->add($post["HospitalHasType"]['type_id'], $model->id);
+            $model_type->add($post["HospitalHasType"]['type_id'] ?? [], $model->id);
 
             return $this->redirect(['/hospitals']);
         } else {
@@ -206,7 +208,7 @@ class HospitalsController extends AuthController
         $model->save();
 
         $new_name1 = $new_path1 .DIRECTORY_SEPARATOR.$name;
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
+        copy($image, $new_name1);
 
 //        $image = new ImageResize($image);
 //        $image->resizeToBestFit(254, 223);

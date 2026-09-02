@@ -80,7 +80,7 @@ use kartik\select2\Select2;
                                 <?= Html::submitButton('Պահպանել', ['class' => 'btn btn-brand ']) ?>
                                 <?= Html::a('Չեղարկել', ['/comments'], ['class' => 'btn btn-secondary'])?>
                             </div>
-                            <?if(!$model->isNewRecord):?>
+                            <?php if(!$model->isNewRecord):?>
                                 <div class="col m--align-right">
                                     <?= Html::a(Yii::t('admin', 'Ջնջել'), ['delete', 'id' => $model->id], [
                                         'class' => 'btn btn-danger',
@@ -90,7 +90,7 @@ use kartik\select2\Select2;
                                         ],
                                     ]) ?>
                                 </div>
-                            <?endif;?>
+                            <?php endif;?>
                         </div>
                     </div>
                 </div>

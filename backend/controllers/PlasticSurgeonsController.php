@@ -56,7 +56,9 @@ class PlasticSurgeonsController extends AuthController
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
 
-        $model->name_alias = $post['Doctor']['alias'] ? $post['Doctor']['alias'] : $post['lang']['full_name_1'];
+        $model->name_alias = !empty($post['Doctor']['alias'])
+            ? $post['Doctor']['alias']
+            : ($post['lang']['full_name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
 
         $data_hospital = [];
@@ -84,8 +86,8 @@ class PlasticSurgeonsController extends AuthController
             }
 
             $model_lang->add($post, $lang, $model->id);
-            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'], $model->id);
-            $model_category->add($post["DoctorHasCategory"]['category_id'], $model->id);
+            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'] ?? [], $model->id);
+            $model_category->add($post["DoctorHasCategory"]['category_id'] ?? [], $model->id);
 
             return $this->redirect(['/plastic-surgeons']);
 
@@ -118,7 +120,9 @@ class PlasticSurgeonsController extends AuthController
 
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['Doctor']['alias'] ? $post['Doctor']['alias'] : $post['lang']['full_name_1'];
+        $model->name_alias = !empty($post['Doctor']['alias'])
+            ? $post['Doctor']['alias']
+            : ($post['lang']['full_name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
         $lastImage = $model->image;
 
@@ -153,10 +157,10 @@ class PlasticSurgeonsController extends AuthController
             $model_lang->add($post, $lang, $model->id);
 
             $model_hospital->remove($model->id);
-            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'], $model->id);
+            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'] ?? [], $model->id);
 
             $model_category->remove($model->id);
-            $model_category->add($post["DoctorHasCategory"]['category_id'], $model->id);
+            $model_category->add($post["DoctorHasCategory"]['category_id'] ?? [], $model->id);
 
             return $this->redirect(['/plastic-surgeons']);
         } else {
@@ -231,7 +235,7 @@ class PlasticSurgeonsController extends AuthController
         $model->save();
 
         $new_name1 = $new_path1 .DIRECTORY_SEPARATOR.$name;
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
+        copy($image, $new_name1);
 //        $image = new ImageResize($image);
 //        $image->resizeToBestFit(254, 223);
 //        $image->crop(254, 223);

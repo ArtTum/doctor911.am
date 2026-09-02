@@ -324,7 +324,7 @@ class RecommendationsController extends Controller
         $model = $this->findModel($id);
         $post = Yii::$app->request->post();
 
-        if ($post['Services']['day_surgery'] && !$model->day_surgery) {
+        if (!empty($post['Services']['day_surgery']) && !$model->day_surgery) {
             $post['Services']['color'] = '#0070C0';
         }
 

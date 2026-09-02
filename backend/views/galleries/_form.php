@@ -76,7 +76,7 @@ use yii\widgets\ActiveForm;
                                 <?= Html::submitButton('Պահպանել', ['class' => 'btn btn-brand ']) ?>
                                 <?= Html::a('Չեղարկել', ['/galleries'], ['class' => 'btn btn-secondary'])?>
                             </div>
-                            <?if(!$model->isNewRecord):?>
+                            <?php if(!$model->isNewRecord):?>
                                 <div class="col m--align-right">
                                     <?= Html::a(Yii::t('admin', 'Ջնջել'), ['delete', 'id' => $model->id], [
                                         'class' => 'btn btn-danger',
@@ -86,7 +86,7 @@ use yii\widgets\ActiveForm;
                                         ],
                                     ]) ?>
                                 </div>
-                            <?endif;?>
+                            <?php endif;?>
                         </div>
                     </div>
                 </div>

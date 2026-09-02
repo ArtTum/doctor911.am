@@ -52,7 +52,7 @@ if((Yii::$app->controller->action->id == 'index')){
 <?php $this->beginBody() ?>
 <!-- begin:: Page -->
 <div class="m-grid m-grid--hor m-grid--root m-page">
-    <?if(!Yii::$app->user->isGuest):?>
+    <?php if(!Yii::$app->user->isGuest):?>
         <?= $this->render(
             'header.php'
         ) ?>
@@ -64,7 +64,7 @@ if((Yii::$app->controller->action->id == 'index')){
             'left.php'
         )
         ?>
-        <?endif;?>
+        <?php endif;?>
         <!-- END: Left Aside -->
         <?= $this->render(
             'content.php',

@@ -12,7 +12,7 @@ use common\models\Hospital;
 use common\models\HospitalHasDoctor;
 use common\models\Lang;
 use common\models\LangHasDoctor;
-use common\models\Library;
+use common\models\LangHasLibrary;
 use Gumlet\ImageResize;
 use Yii;
 use common\models\Doctor;
@@ -62,11 +62,14 @@ class DoctorsController extends AuthController
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
 
-        $model->name_alias = $post['Doctor']['alias'] ? $post['Doctor']['alias'] : $post['lang']['full_name_1'];
+        $model->name_alias = !empty($post['Doctor']['alias'])
+            ? $post['Doctor']['alias']
+            : ($post['lang']['full_name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
 
         $data_hospital = [];
         $data_category = [];
+        $data = [];
 
         $hospitals = Hospital::find()->all();
 
@@ -80,25 +83,7 @@ class DoctorsController extends AuthController
             $data_category[$category->id] = Translate::text($category->getLangHasCategories(), 'name');
         }
 
-        $libraries = Library::find()
-            ->joinWith(['langHasLibraries'])
-            ->orderBy(['lang_has_library.name' => SORT_ASC])
-            ->all();
-
-        foreach($libraries as $item){
-            $data[$item->id] = Translate::text($item->getLangHasLibraries(), 'name', 'ru');
-        }
-
-        $libraries = Library::find()
-            ->joinWith(['langHasLibraries'])
-            ->orderBy(['lang_has_library.name' => SORT_ASC])
-            ->all();
-
-        foreach($libraries as $item){
-            $data[$item->id] = Translate::text($item->getLangHasLibraries(), 'name');
-        }
-
-
+        $data = $this->getLibraryData();
 
         if ($model->load($post) && $model->save()) {
 
@@ -109,8 +94,8 @@ class DoctorsController extends AuthController
             }
 
             $model_lang->add($post, $lang, $model->id);
-            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'], $model->id);
-            $model_category->add($post["DoctorHasCategory"]['category_id'], $model->id);
+            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'] ?? [], $model->id);
+            $model_category->add($post["DoctorHasCategory"]['category_id'] ?? [], $model->id);
             $modelLibery->add($libery_id, $model->id);
 
             return $this->redirect(['/doctors']);
@@ -148,12 +133,16 @@ class DoctorsController extends AuthController
         $modelLibery = new DoctorHasLibrary();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['Doctor']['alias'] ? $post['Doctor']['alias'] : $post['lang']['full_name_1'];
+        $model->name_alias = !empty($post['Doctor']['alias'])
+            ? $post['Doctor']['alias']
+            : ($post['lang']['full_name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
         $lastImage = $model->image;
 
         $data_hospital = [];
         $data_category = [];
+        $data = [];
+        $value = [];
 
         $hospitals = Hospital::find()->all();
 
@@ -167,14 +156,7 @@ class DoctorsController extends AuthController
             $data_category[$category->id] = Translate::text($category->getLangHasCategories(), 'name');
         }
 
-        $libraries = Library::find()
-            ->joinWith(['langHasLibraries'])
-            ->orderBy(['lang_has_library.name' => SORT_ASC])
-            ->all();
-
-        foreach($libraries as $item){
-            $data[$item->id] = Translate::text($item->getLangHasLibraries(), 'name', 'ru');
-        }
+        $data = $this->getLibraryData();
 
         foreach($modelHas as $item){
             $value[] = $item->library_id;
@@ -202,10 +184,10 @@ class DoctorsController extends AuthController
             $model_lang->add($post, $lang, $model->id);
 
             $model_hospital->remove($model->id);
-            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'], $model->id);
+            $model_hospital->add($post["HospitalHasDoctor"]['hospital_id'] ?? [], $model->id);
 
             $model_category->remove($model->id);
-            $model_category->add($post["DoctorHasCategory"]['category_id'], $model->id);
+            $model_category->add($post["DoctorHasCategory"]['category_id'] ?? [], $model->id);
 
             return $this->redirect(['/doctors']);
         } else {
@@ -267,6 +249,32 @@ class DoctorsController extends AuthController
         }
     }
 
+    private function getLibraryData()
+    {
+        $languageId = Lang::find()
+            ->select('id')
+            ->where(['iso' => Yii::$app->language])
+            ->scalar();
+
+        if ($languageId === false) {
+            return [];
+        }
+
+        $translations = LangHasLibrary::find()
+            ->select(['library_id', 'name'])
+            ->where(['lang_id' => $languageId])
+            ->orderBy(['name' => SORT_ASC])
+            ->asArray()
+            ->all();
+        $data = [];
+
+        foreach ($translations as $translation) {
+            $data[$translation['library_id']] = $translation['name'];
+        }
+
+        return $data;
+    }
+
     /**
      * @param $id
      * @throws NotFoundHttpException
@@ -296,8 +304,7 @@ class DoctorsController extends AuthController
         $model->save();
 
         $new_name1 = $new_path1 .DIRECTORY_SEPARATOR.$name;
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
+        copy($image, $new_name1);
 //        $image = new ImageResize($image);
 //        $image->resizeToBestFit(254, 223);
 //        $image->crop(254, 223);

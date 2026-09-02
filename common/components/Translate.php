@@ -6,6 +6,8 @@ use common\models\Lang;
 use yii\base\Component;
 
 class Translate extends Component{
+    private static $languageIds = [];
+
     /**
      * Маска начала и конца
      */
@@ -28,13 +30,19 @@ class Translate extends Component{
         if($lang == NULL){
             $lang = \Yii::$app->language;
         }
-        $iso = Lang::find()->where(['iso' => $lang])->one();
-        $result = isset($model->where(['lang_id' => $iso->id])->one()[$param]) ?
-            $model->where(['lang_id' => $iso->id])->one()[$param]
-            :
-            '';
 
-        return $result;
+        if (!array_key_exists($lang, self::$languageIds)) {
+            $languageId = Lang::find()->select('id')->where(['iso' => $lang])->scalar();
+            self::$languageIds[$lang] = $languageId === false ? null : (int) $languageId;
+        }
+
+        if (self::$languageIds[$lang] === null) {
+            return '';
+        }
+
+        $translation = $model->andWhere(['lang_id' => self::$languageIds[$lang]])->one();
+
+        return $translation[$param] ?? '';
     }
     
 

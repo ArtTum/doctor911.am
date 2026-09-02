@@ -48,7 +48,7 @@ class TypesController extends AuthController
         $model_lang = new LangHasType();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['lang']['name_1'];
+        $model->name_alias = $post['lang']['name_1'] ?? null;
 
         if ($model->load($post) && $model->save()) {
 

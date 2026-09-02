@@ -57,6 +57,7 @@ class HelpInfoController extends AuthController
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
         $upload = UploadedFile::getInstance($model, 'image');
+        $model->image = '';
 
         if ($model->load($post) && $model->save()) {
 
@@ -175,7 +176,7 @@ class HelpInfoController extends AuthController
         $model->save();
 
         $new_name1 = $new_path1 .DIRECTORY_SEPARATOR.$name;
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
+        copy($image, $new_name1);
 //        $image = new ImageResize($image);
 //        $image->resizeToBestFit(262, 146);
 //        $image->crop(262, 146);

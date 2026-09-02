@@ -46,8 +46,9 @@ class NewsController extends AuthController
         $model_lang = new LangHasNews();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['lang']['name_1'];
+        $model->name_alias = $post['lang']['name_1'] ?? null;
         $upload = UploadedFile::getInstance($model, 'image');
+        $model->image = '';
 
 
         if ($model->load($post) && $model->save()) {
@@ -81,7 +82,9 @@ class NewsController extends AuthController
         $model_lang = new LangHasNews();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['News']['alias'] ? $post['News']['alias'] : $post['lang']['name_1'];
+        $model->name_alias = !empty($post['News']['alias'])
+            ? $post['News']['alias']
+            : ($post['lang']['name_1'] ?? null);
         $upload = UploadedFile::getInstance($model, 'image');
         $lastImage = $model->image;
 
@@ -168,7 +171,7 @@ class NewsController extends AuthController
         $model->save();
 
         $new_name1 = $new_path1 .DIRECTORY_SEPARATOR.$name;
-        $file->saveAs($new_path1 . DIRECTORY_SEPARATOR . $new_name1);
+        copy($image, $new_name1);
 //        $image = new ImageResize($image);
 //        $image->resizeToBestFit(254, 223);
 //        $image->crop(254, 223);
