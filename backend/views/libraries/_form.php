@@ -5,8 +5,10 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\Category */
+/* @var $model common\models\Library */
 /* @var $form yii\widgets\ActiveForm */
+
+$tabs = ['items' => []];
 ?>
 <?php $form = ActiveForm::begin([
     'options' => [
@@ -35,14 +37,14 @@ use yii\widgets\ActiveForm;
 
                 <div class="m-portlet__body row">
                     <div class="col-12">
-                        <?if(!$model->isNewRecord):?>
+                        <?php if (!$model->isNewRecord): ?>
                             <?= $form->field($model, 'alias')->textInput(['maxlength' => true]) ?>
-                        <?endif;?>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group m-form__group col-12">
 
-                        <?
-                        foreach($lang as $item){
+                        <?php
+                        foreach ($lang as $item) {
                             $tabs['items'][] =  [
                                 'label' => $item->name,
                                 'content' => $this->render('_input', [
@@ -54,7 +56,7 @@ use yii\widgets\ActiveForm;
                             ];
                         }
                         ?>
-                        <?= Tabs::widget($tabs);?>
+                        <?= Tabs::widget($tabs); ?>
 
                     </div>
                     <div class="form-group m-form__group col-6">
@@ -73,7 +75,7 @@ use yii\widgets\ActiveForm;
                                 <?= Html::submitButton('Պահպանել', ['class' => 'btn btn-brand ']) ?>
                                 <?= Html::a('Չեղարկել', ['/libraries'], ['class' => 'btn btn-secondary'])?>
                             </div>
-                            <?if(!$model->isNewRecord):?>
+                            <?php if (!$model->isNewRecord): ?>
                                 <div class="col m--align-right">
                                     <?= Html::a(Yii::t('admin', 'Ջնջել'), ['delete', 'id' => $model->id], [
                                         'class' => 'btn btn-danger',
@@ -83,7 +85,7 @@ use yii\widgets\ActiveForm;
                                         ],
                                     ]) ?>
                                 </div>
-                            <?endif;?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -94,4 +96,3 @@ use yii\widgets\ActiveForm;
 </div>
 
 <?php ActiveForm::end(); ?>
-

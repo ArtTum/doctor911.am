@@ -43,12 +43,15 @@ class LibrariesController extends AuthController
         $model_lang = new LangHasLibrary();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['lang']['name_1'];
 
-        if ($model->load($post) && $model->save()) {
+        if ($model->load($post)) {
+            $model->name_alias = $post['lang']['name_1'] ?? null;
 
-            $model_lang->add($post, $lang, $model->id);
-            return $this->redirect(['/libraries']);
+            if ($model->save()) {
+
+                $model_lang->add($post, $lang, $model->id);
+                return $this->redirect(['/libraries']);
+            }
         }
 
         return $this->render('create', [
@@ -71,13 +74,16 @@ class LibrariesController extends AuthController
         $model_lang = new LangHasLibrary();
         $lang = Lang::find()->all();
         $post = Yii::$app->request->post();
-        $model->name_alias = $post['Library']['alias'] ? $post['Library']['alias'] : $post['lang']['name_1'];
 
-        if ($model->load($post) && $model->save()) {
+        if ($model->load($post)) {
+            $model->name_alias = $model->alias ?: ($post['lang']['name_1'] ?? null);
 
-            $model_lang->remove($model->id);
-            $model_lang->add($post, $lang, $model->id);
-            return $this->redirect(['/libraries']);
+            if ($model->save()) {
+
+                $model_lang->remove($model->id);
+                $model_lang->add($post, $lang, $model->id);
+                return $this->redirect(['/libraries']);
+            }
         }
 
         return $this->render('update', [

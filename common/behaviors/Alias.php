@@ -1,7 +1,5 @@
 <?php
 namespace common\behaviors;
-use dosamigos\transliterator\TransliteratorHelper;
-use yii;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
 use yii\helpers\Inflector;
@@ -38,7 +36,7 @@ class Alias extends Behavior
     private function slugify( $slug )
     {
         if ( $this->translit ) {
-            return Inflector::slug( TransliteratorHelper::process( $slug ), '-', true );
+            return Inflector::slug( $slug, '-', true );
         } else {
             return $this->slug( $slug, '-', true );
         }
